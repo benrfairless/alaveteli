@@ -21,16 +21,18 @@ rescue LoadError
   $acts_as_xapian_bindings_available = false
 end
 
-module Xapian
-  class QueryParser
-    def unstem(term)
-      words = []
+unless Xapian::QueryParser.method_defined? :unstem
+  module Xapian
+    class QueryParser
+      def unstem(term)
+        words = []
 
-      Xapian._safelyIterate(unstem_begin(term), unstem_end(term)) do |item|
-        words << item.term
+        Xapian._safelyIterate(unstem_begin(term), unstem_end(term)) do |item|
+          words << item.term
+        end
+
+        words
       end
-
-      words
     end
   end
 end
