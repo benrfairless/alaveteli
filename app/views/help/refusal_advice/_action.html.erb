@@ -1,9 +1,15 @@
 <div class="wizard__action" data-block="<%= action.id %>">
   <h2><%= action.header %></h2>
 
-  <%= render action.suggestions %>
+  <% if @info_request %>
+    <%= f.fields_for 'actions[]', action, include_id: false do |f| %>
+      <%= render action.suggestions, f: f %>
+    <% end %>
 
-  <button type="submit" class="button" value="<%= action.id %>">
-    <%= action.button %>
-  </button>
+    <%= f.button name: "#{f.object_name}[button]", value: action.id, class: 'button' do %>
+      <%= action.button %>
+    <% end %>
+  <% else %>
+    <%= render action.suggestions %>
+  <% end %>
 </div>
