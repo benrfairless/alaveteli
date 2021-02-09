@@ -1,0 +1,49 @@
+<% if @snippet.errors.any? %>
+  <ul>
+    <% @snippet.errors.each do |attr, message| %>
+      <% unless attr.to_s.starts_with?('translation') %>
+        <li><%= attr %> <%= message %></li>
+      <% end %>
+    <% end %>
+  </ul>
+<% end %>
+
+<% @snippet.ordered_translations.each do |translation| %>
+  <% if translation.errors.any? %>
+    <%= locale_name(translation.locale.to_s) || translation.locale.to_s %>
+    <ul>
+      <% translation.errors.each do |attr, message| %>
+        <li><%= attr %> <%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+
+<div id="div-locales">
+  <%= locale_tabs @snippet %>
+
+  <div class="tab-content">
+    <% @snippet.ordered_translations.each do |translation| %>
+       <% if AlaveteliLocalization.default_locale?(translation.locale) %>
+        <%= fields_for 'snippet', @snippet do |t| %>
+          <%= render :partial => 'locale_fields', :locals => { :t => t, :locale => translation.locale } %>
+        <% end %>
+      <% else %>
+        <%= f.fields_for(:translations, translation, :child_index => translation.locale) do |t| %>
+          <%= render :partial => 'locale_fields', :locals => { :t => t, :locale => translation.locale } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<h3>Common Fields</h3>
+
+<div class="control-group">
+  <%= f.label :tags, :class => 'control-label' %>
+
+  <div class="controls">
+     <%= f.text_field :tag_string, class: 'span4' %>
+  </div>
+</div>
+
